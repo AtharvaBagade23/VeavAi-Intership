@@ -20,12 +20,12 @@ export function ApiSidebar({ selectedAPI, onSelectAPI }: ApiSidebarProps) {
   }
 
   return (
-    <div className="w-80 veavai-glass border-r border-white/20 overflow-y-auto circuit-pattern rounded-lg">
+    <div className="w-80 border-r border-black/20 dark:border-white/20 overflow-y-auto dark:circuit-pattern rounded-lg">
       <div className="p-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">API Categories</h3>
         <div className="space-y-2">
           {Object.entries(apiCategories).map(([category, apis]) => (
-            <div key={category} className="border border-white/20 rounded-lg veavai-glass overflow-hidden">
+            <div key={category} className="border border-black/20 dark:border-white/20 rounded-lg overflow-hidden">
               <button
                 onClick={() => toggleCategory(category)}
                 className="w-full flex items-center justify-between p-3 text-left hover:bg-white/10 transition-colors rounded-lg"
@@ -38,7 +38,7 @@ export function ApiSidebar({ selectedAPI, onSelectAPI }: ApiSidebarProps) {
                 )}
               </button>
               {expandedCategories.includes(category) && (
-                <div className="border-t border-white/20 animate-in slide-in-from-top duration-200">
+                <div className="border-t border-black/20 dark:border-white/20 animate-in slide-in-from-top duration-200">
                   {apis.map((api) => (
                     <button
                       key={api.name}
