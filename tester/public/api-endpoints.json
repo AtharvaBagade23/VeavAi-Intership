@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Agent 1",
+    "endpoint": "https://mocksite.com/api/agent1.php",
+    "phpFileUrl": "/mock-agent1.txt"
+  },
+  {
+    "name": "AI Scott (Local PHP)",
+    "endpoint": "http://localhost:8000/ai-scott.php",
+    "description": "Evaluates software projects based on engineering quality, AI integration, UX, and business feasibility. (Local PHP)",
+    "category": "Agent",
+    "method": "POST"
+  }
+] 

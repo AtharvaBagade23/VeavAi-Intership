@@ -1,0 +1,115 @@
+{
+  "Medical": [
+    {
+      "name": "AI Ava",
+      "endpoint": "/api/medical/ai-ava",
+      "description": "Medical diagnosis and treatment recommendations specialist",
+      "category": "Medical",
+      "method": "POST"
+    },
+    {
+      "name": "TheoCare",
+      "endpoint": "/api/medical/theocare",
+      "description": "Therapeutic care planning and patient management AI",
+      "category": "Medical",
+      "method": "POST"
+    },
+    {
+      "name": "Claudio",
+      "endpoint": "/api/medical/claudio",
+      "description": "Clinical decision support and medical coding specialist",
+      "category": "Medical",
+      "method": "POST"
+    },
+    {
+      "name": "Dr. Codix",
+      "endpoint": "/api/medical/dr-codix",
+      "description": "Medical coding and billing automation specialist",
+      "category": "Medical",
+      "method": "POST"
+    }
+  ],
+  "Hackathons": [
+    {
+      "name": "AI Scott",
+      "endpoint": "/api/hackathons/ai-scott",
+      "description": "Hackathon project evaluation and technical assessment judge",
+      "category": "Hackathons",
+      "method": "POST"
+    },
+    {
+      "name": "AI Maria",
+      "endpoint": "/api/hackathons/ai-maria",
+      "description": "Innovation and creativity assessment specialist for competitions",
+      "category": "Hackathons",
+      "method": "POST"
+    },
+    {
+      "name": "Ethan Nova",
+      "endpoint": "/api/hackathons/ethan-nova",
+      "description": "Startup pitch evaluation and business model analysis expert",
+      "category": "Hackathons",
+      "method": "POST"
+    },
+    {
+      "name": "AI Artuso",
+      "endpoint": "/api/hackathons/ai-artuso",
+      "description": "Design and user experience evaluation specialist",
+      "category": "Hackathons",
+      "method": "POST"
+    },
+    {
+      "name": "EvaMatch",
+      "endpoint": "/api/hackathons/evamatch",
+      "description": "Team formation and skill matching for hackathon participants",
+      "category": "Hackathons",
+      "method": "POST"
+    }
+  ],
+  "General": [
+    {
+      "name": "RayAn",
+      "endpoint": "/api/general/rayan",
+      "description": "General purpose AI assistant for various tasks and queries",
+      "category": "General",
+      "method": "POST"
+    }
+  ],
+  "Education": [
+    {
+      "name": "DeanAI Lydia",
+      "endpoint": "/api/education/deanai-lydia",
+      "description": "Academic administration and institutional management specialist",
+      "category": "Education",
+      "method": "POST"
+    },
+    {
+      "name": "TutorAI Max",
+      "endpoint": "/api/education/tutorai-max",
+      "description": "Personalized tutoring and learning assistance specialist",
+      "category": "Education",
+      "method": "POST"
+    },
+    {
+      "name": "CareAI Elara",
+      "endpoint": "/api/education/careai-elara",
+      "description": "Student wellness and mental health support specialist",
+      "category": "Education",
+      "method": "POST"
+    },
+    {
+      "name": "AdminAI Leo",
+      "endpoint": "/api/education/adminai-leo",
+      "description": "Educational administrative tasks and process automation",
+      "category": "Education",
+      "method": "POST"
+    },
+    {
+      "name": "HelpAI Nina",
+      "endpoint": "/api/education/helpai-nina",
+      "description": "Student support services and academic guidance specialist",
+      "category": "Education",
+      "method": "POST"
+    }
+  ]
+} 

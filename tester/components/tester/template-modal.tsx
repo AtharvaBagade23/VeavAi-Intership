@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -14,16 +14,48 @@ interface TemplateModalProps {
   onClose: () => void
   selectedAPI: ApiData
   onApplyTemplate: (template: any) => void
+  template?: any
 }
 
-export function TemplateModal({ isOpen, onClose, selectedAPI, onApplyTemplate }: TemplateModalProps) {
+export function TemplateModal({ isOpen, onClose, selectedAPI, onApplyTemplate, template: propTemplate }: TemplateModalProps) {
   const [activeTab, setActiveTab] = useState("json")
+  const [template, setTemplate] = useState<any>(propTemplate ?? getApiTemplate(selectedAPI).json)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const templates = getApiTemplate(selectedAPI)
+  useEffect(() => {
+    if (propTemplate) {
+      setTemplate(propTemplate)
+    }
+  }, [propTemplate])
 
-  const handleApplyTemplate = (template: any) => {
-    onApplyTemplate(template)
-    onClose()
+  const handleFileUpload = async (file: File) => {
+    console.log("[DEBUG] handleFileUpload called with file:", file);
+    setUploading(true)
+    setUploadError(null)
+    const formData = new FormData()
+    formData.append("file", file)
+    try {
+      console.log("[DEBUG] Sending POST to /api/template/upload");
+      const res = await fetch("/api/template/upload", {
+        method: "POST",
+        body: formData,
+      })
+      console.log("[DEBUG] Got response from /api/template/upload", res);
+      const data = await res.json()
+      console.log("[DEBUG] Response JSON:", data);
+      if (data.template) {
+        setTemplate(data.template)
+        setActiveTab("json")
+      } else {
+        setUploadError(data.error || "No template found in file")
+      }
+    } catch (err) {
+      setUploadError("Failed to upload file")
+      console.error("[DEBUG] Upload error:", err);
+    }
+    setUploading(false)
   }
 
   return (
@@ -56,18 +88,18 @@ export function TemplateModal({ isOpen, onClose, selectedAPI, onApplyTemplate }:
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => navigator.clipboard.writeText(JSON.stringify(templates.json, null, 2))}
+                      onClick={() => navigator.clipboard.writeText(JSON.stringify(template, null, 2))}
                     >
                       <Copy className="h-4 w-4 mr-2" />
                       Copy
                     </Button>
-                    <Button size="sm" onClick={() => handleApplyTemplate(templates.json)} className="veavai-gradient">
+                    <Button size="sm" onClick={() => onApplyTemplate(template)} className="veavai-gradient">
                       Apply Template
                     </Button>
                   </div>
                 </div>
                 <pre className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-auto text-sm border border-gray-200 dark:border-gray-700">
-                  {JSON.stringify(templates.json, null, 2)}
+                  {JSON.stringify(template, null, 2)}
                 </pre>
               </CardContent>
             </Card>
@@ -82,18 +114,18 @@ export function TemplateModal({ isOpen, onClose, selectedAPI, onApplyTemplate }:
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => navigator.clipboard.writeText(JSON.stringify(templates.file, null, 2))}
+                      onClick={() => navigator.clipboard.writeText(JSON.stringify(template, null, 2))}
                     >
                       <Copy className="h-4 w-4 mr-2" />
                       Copy
                     </Button>
-                    <Button size="sm" onClick={() => handleApplyTemplate(templates.file)} className="veavai-gradient">
+                    <Button size="sm" onClick={() => onApplyTemplate(template)} className="veavai-gradient">
                       Apply Template
                     </Button>
                   </div>
                 </div>
                 <pre className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-auto text-sm border border-gray-200 dark:border-gray-700">
-                  {JSON.stringify(templates.file, null, 2)}
+                  {JSON.stringify(template, null, 2)}
                 </pre>
               </CardContent>
             </Card>

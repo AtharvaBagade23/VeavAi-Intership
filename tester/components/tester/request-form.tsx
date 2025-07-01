@@ -1,6 +1,6 @@
 "use client"
 
-import { Send } from "lucide-react"
+import { Send, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import type { ApiData } from "@/types/api"
 import type { RequestData } from "@/types/request"
+import { useEffect } from "react"
 
 interface RequestFormProps {
   selectedAPI: ApiData
@@ -18,17 +19,23 @@ interface RequestFormProps {
   setRequestData: React.Dispatch<React.SetStateAction<RequestData>>
   onSendRequest: () => void
   isLoading: boolean
+  onShowTemplateModal: () => void
 }
 
-export function RequestForm({ selectedAPI, requestData, setRequestData, onSendRequest, isLoading }: RequestFormProps) {
+export function RequestForm({ selectedAPI, requestData, setRequestData, onSendRequest, isLoading, onShowTemplateModal }: RequestFormProps) {
   const updateRequestData = (field: keyof RequestData, value: string | boolean) => {
     setRequestData({ ...requestData, [field]: value })
   }
 
-  // Set endpoint when API is selected
-  if (requestData.endpoint !== `https://api.veavai.com${selectedAPI.endpoint}`) {
-    updateRequestData("endpoint", `https://api.veavai.com${selectedAPI.endpoint}`)
-  }
+  // Sync endpoint field only when selectedAPI.endpoint changes
+  useEffect(() => {
+    if (requestData.endpoint !== selectedAPI.endpoint) {
+      setRequestData(prev => ({
+        ...prev,
+        endpoint: selectedAPI.endpoint
+      }));
+    }
+  }, [selectedAPI.endpoint]);
 
   return (
     <Card className="veavai-glass">
@@ -88,6 +95,18 @@ export function RequestForm({ selectedAPI, requestData, setRequestData, onSendRe
             className="font-mono h-32"
             placeholder="JSON request body"
           />
+        </div>
+
+        {/* Suggest Template Button */}
+        <div className="flex justify-start">
+          <Button
+            onClick={onShowTemplateModal}
+            variant="outline"
+            className="border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+          >
+            <Sparkles className="h-4 w-4 mr-2" />
+            Suggest Template
+          </Button>
         </div>
 
         {/* Options */}
