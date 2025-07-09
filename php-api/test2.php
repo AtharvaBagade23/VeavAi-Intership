@@ -1,6 +1,6 @@
 <?php
 /**
- * @api {post} /DOM/ai_specialists/et_generate_homepage_description Generate Hackathon Homepage HTML
+ * @api {post} http://localhost:8000/DOM/ai_specialists/et_generate_homepage_description Generate Hackathon Homepage HTML
  * @apiName GenerateHomepage
  * @apiGroup ContentGenerator
  * @apiDescription
@@ -39,25 +39,17 @@ ob_start();
 header("Content-Type: application/json");
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
+define('OPENAI_API_KEY_VEAVAI', 'sk-ijkl1234ijkl1234ijkl1234ijkl1234ijkl1234');
+// ====== DUMMY LOGIC FOR TESTING ======
+// Remove all require_once lines for missing dependencies
+// Dummy authentication for testing
+$customerId = "test_customer";
 
-require_once 'rate_limiter.php';
-require_once 'db.php';
-require_once 'common_functions.php';
-require_once 'importantDataAISpecialists.php';
-require_once 'extractTextFunctions1.php'; // You need this reusable function — already used in judge-project.php
-
-$startTime = microtime(true);
-
-// Validate API Key
-$apiKeyValidation = validateApiKey($conn);
-if (!$apiKeyValidation["valid"]) {
-    echo json_encode(["error" => $apiKeyValidation["message"]]);
+// Add a simple response at the top to confirm the endpoint is running
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST) && empty(file_get_contents('php://input'))) {
+    echo json_encode(["status" => "ok", "message" => "Endpoint is running (no data received)"]);
     exit;
 }
-$customerId = $apiKeyValidation["customer_id"];
-
-// Deduct Credit
-requireCredits($conn, $customerId, 1);
 
 // Detect content type
 $contentType = $_SERVER["CONTENT_TYPE"] ?? '';
