@@ -28,7 +28,7 @@ export function ContactSection() {
   ]
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 animate-in slide-in-from-left duration-500">
+    <div className="max-w-4xl mx-auto px-4 py-12 animate-in slide-in-from-right duration-500">
       <Card className="veavai-glass border-0 shadow-2xl shadow-blue-500/10">
         <CardHeader className="text-center">
           <CardTitle className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-4">

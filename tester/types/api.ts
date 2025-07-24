@@ -18,4 +18,5 @@ export interface RequestHistory {
   status: number
   responseTime: number
   timestamp: string
+  response: any
 }

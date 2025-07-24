@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
-import { Copy, FileText, Upload } from "lucide-react"
+import { Copy, FileText, Upload, Sparkles } from "lucide-react"
 import type { ApiData } from "@/types/api"
 import { getApiTemplate } from "@/utils/template-generator"
 
@@ -19,43 +19,70 @@ interface TemplateModalProps {
 
 export function TemplateModal({ isOpen, onClose, selectedAPI, onApplyTemplate, template: propTemplate }: TemplateModalProps) {
   const [activeTab, setActiveTab] = useState("json")
-  const [template, setTemplate] = useState<any>(propTemplate ?? getApiTemplate(selectedAPI).json)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Remove local template state and use propTemplate directly
+
   useEffect(() => {
-    if (propTemplate) {
-      setTemplate(propTemplate)
+    if (isOpen && /^https?:\/\//i.test(selectedAPI.endpoint) && !propTemplate) {
+      handleSuggestTemplate();
     }
-  }, [propTemplate])
+    // Only run when modal opens or endpoint changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, selectedAPI.endpoint, propTemplate]);
 
   const handleFileUpload = async (file: File) => {
-    console.log("[DEBUG] handleFileUpload called with file:", file);
     setUploading(true)
     setUploadError(null)
     const formData = new FormData()
     formData.append("file", file)
     try {
-      console.log("[DEBUG] Sending POST to /api/template/upload");
       const res = await fetch("/api/template/upload", {
         method: "POST",
         body: formData,
       })
-      console.log("[DEBUG] Got response from /api/template/upload", res);
       const data = await res.json()
-      console.log("[DEBUG] Response JSON:", data);
       if (data.template) {
-        setTemplate(data.template)
+        // Use onApplyTemplate to update parent
+        onApplyTemplate(data.template)
         setActiveTab("json")
       } else {
         setUploadError(data.error || "No template found in file")
       }
     } catch (err) {
       setUploadError("Failed to upload file")
-      console.error("[DEBUG] Upload error:", err);
     }
     setUploading(false)
+  }
+
+  const handleSuggestTemplate = async () => {
+    if (/^https?:\/\//i.test(selectedAPI.endpoint)) {
+      try {
+        const url = new URL(selectedAPI.endpoint);
+        let relativePath = url.pathname.split('/').pop() || '';
+        if (!relativePath.endsWith('.php')) {
+          relativePath += '.php';
+        }
+        const apiUrl = `https://app.callxpress.net/DOM/ai_specialists/api_tester/extract_template_from_doc.php?path=${relativePath}&method=${selectedAPI.method}`;
+        setUploading(true);
+        setUploadError(null);
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+        if (res.ok && Object.keys(data).length > 0) {
+          onApplyTemplate(data.template ? data.template : data);
+          setActiveTab('json');
+        } else {
+          setUploadError('No request template found for this endpoint and method.');
+        }
+      } catch (e: any) {
+        setUploadError('Error fetching template: ' + (e.message || e));
+      }
+      setUploading(false);
+      return;
+    }
+    fileInputRef.current?.click();
   }
 
   return (
@@ -88,18 +115,18 @@ export function TemplateModal({ isOpen, onClose, selectedAPI, onApplyTemplate, t
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => navigator.clipboard.writeText(JSON.stringify(template, null, 2))}
+                      onClick={() => navigator.clipboard.writeText(JSON.stringify(propTemplate, null, 2))}
                     >
                       <Copy className="h-4 w-4 mr-2" />
                       Copy
                     </Button>
-                    <Button size="sm" onClick={() => onApplyTemplate(template)} className="veavai-gradient">
+                    <Button size="sm" onClick={() => onApplyTemplate(propTemplate)} className="veavai-gradient">
                       Apply Template
                     </Button>
                   </div>
                 </div>
                 <pre className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-auto text-sm border border-gray-200 dark:border-gray-700">
-                  {JSON.stringify(template, null, 2)}
+                  {JSON.stringify(propTemplate, null, 2)}
                 </pre>
               </CardContent>
             </Card>
@@ -114,18 +141,18 @@ export function TemplateModal({ isOpen, onClose, selectedAPI, onApplyTemplate, t
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => navigator.clipboard.writeText(JSON.stringify(template, null, 2))}
+                      onClick={() => navigator.clipboard.writeText(JSON.stringify(propTemplate, null, 2))}
                     >
                       <Copy className="h-4 w-4 mr-2" />
                       Copy
                     </Button>
-                    <Button size="sm" onClick={() => onApplyTemplate(template)} className="veavai-gradient">
+                    <Button size="sm" onClick={() => onApplyTemplate(propTemplate)} className="veavai-gradient">
                       Apply Template
                     </Button>
                   </div>
                 </div>
                 <pre className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-auto text-sm border border-gray-200 dark:border-gray-700">
-                  {JSON.stringify(template, null, 2)}
+                  {JSON.stringify(propTemplate, null, 2)}
                 </pre>
               </CardContent>
             </Card>

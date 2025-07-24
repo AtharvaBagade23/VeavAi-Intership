@@ -173,7 +173,7 @@ function StaticTester({ api }: { api: ApiData | null }) {
 export function TesterSection() {
   const [selectedAPI, setSelectedAPI] = useState<ApiData | null>(null)
   return (
-    <div className="flex h-[calc(100vh-4rem)] animate-in slide-in-from-right duration-500">
+    <div className="flex h-[calc(100vh-4rem)] animate-in slide-in-from-left duration-500">
       <StaticSidebar selectedAPI={selectedAPI} onSelectAPI={setSelectedAPI} />
       <StaticTester api={selectedAPI} />
     </div>

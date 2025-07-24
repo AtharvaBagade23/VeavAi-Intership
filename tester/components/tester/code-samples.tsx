@@ -31,7 +31,7 @@ export function CodeSamples({ requestData }: CodeSamplesProps) {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Code Samples</span>
-          <Button variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-50">
+          <Button variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-900/20">
             <Download className="h-4 w-4 mr-2" />
             Download Postman Collection
           </Button>

@@ -13,6 +13,8 @@ import type { ApiData } from "@/types/api"
 import type { RequestData } from "@/types/request"
 import { useEffect } from "react"
 
+const BASE_URL = "https://app.callxpress.net/";
+
 interface RequestFormProps {
   selectedAPI: ApiData
   requestData: RequestData
@@ -29,10 +31,15 @@ export function RequestForm({ selectedAPI, requestData, setRequestData, onSendRe
 
   // Sync endpoint field only when selectedAPI.endpoint changes
   useEffect(() => {
-    if (requestData.endpoint !== selectedAPI.endpoint) {
+    const BASE_URL = "https://app.callxpress.net/";
+    // Always set the full URL in the endpoint field
+    const fullEndpoint = selectedAPI.endpoint.startsWith(BASE_URL)
+      ? selectedAPI.endpoint
+      : selectedAPI.endpoint.replace(/^\//, "");
+    if (requestData.endpoint !== fullEndpoint) {
       setRequestData(prev => ({
         ...prev,
-        endpoint: selectedAPI.endpoint
+        endpoint: fullEndpoint
       }));
     }
   }, [selectedAPI.endpoint]);
@@ -53,8 +60,8 @@ export function RequestForm({ selectedAPI, requestData, setRequestData, onSendRe
             <Input
               id="endpoint"
               value={requestData.endpoint}
-              onChange={(e) => updateRequestData("endpoint", e.target.value)}
-              className="font-mono"
+              readOnly
+              className="font-mono cursor-not-allowed"
             />
           </div>
           <div>

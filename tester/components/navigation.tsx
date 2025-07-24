@@ -22,10 +22,10 @@ export function Navigation({ activeTab, setActiveTab }: NavigationProps) {
   const tabs = ["About", "Tester", "History", "Contact"]
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 veavai-glass border-b border-white/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-black/20 dark:border-white/20">
+      <div className="max-w-12xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-8"> 
             <div className="flex items-center space-x-3">
               <div className="relative w-10 h-10">
                 <Image src="/images/veavai-logo.png" alt="VeavAI Logo" fill className="object-contain" />

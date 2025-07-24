@@ -4,11 +4,12 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Trash2, Clock, ExternalLink } from "lucide-react"
+import { Trash2, Clock, ExternalLink, ChevronDown, ChevronUp } from "lucide-react"
 import type { RequestHistory } from "@/types/api"
 
 export function HistorySection() {
   const [history, setHistory] = useState<RequestHistory[]>([])
+  const [expandedId, setExpandedId] = useState<string | null>(null)
 
   useEffect(() => {
     // Load history from localStorage
@@ -37,7 +38,7 @@ export function HistorySection() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 animate-in slide-in-from-left duration-500">
+    <div className="max-w-6xl mx-auto px-4 py-12 animate-in slide-in-from-top duration-500">
       <Card className="veavai-glass border-0 shadow-2xl shadow-blue-500/10">
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -92,11 +93,22 @@ export function HistorySection() {
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-mono">{item.endpoint}</div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-500">Response time: {item.responseTime}ms</span>
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
+                        aria-expanded={expandedId === item.id}
+                      >
                         <ExternalLink className="h-4 w-4 mr-1" />
                         View Details
+                        {expandedId === item.id ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
                       </Button>
                     </div>
+                    {expandedId === item.id && (
+                      <div className="mt-4 bg-gray-100 dark:bg-gray-800 rounded p-4 overflow-x-auto text-sm font-mono">
+                        <pre className="whitespace-pre-wrap break-all">{JSON.stringify(item.response, null, 2)}</pre>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
