@@ -16,7 +16,7 @@
     },
     {
       "name": "Claudio",
-      "endpoint": "/api/medical/claudio",
+      "endpoint": "/DOM/ai_specialists/claudio",
       "description": "Clinical decision support and medical coding specialist",
       "category": "Medical",
       "method": "POST"
