@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
-  const { endpoint, method, headers, body, devMode } = await req.json()
+  const { endpoint, method, headers, body, devMode, useFileUpload } = await req.json()
 
   if (devMode) {
     // Return a mock response
@@ -14,11 +14,29 @@ export async function POST(req: NextRequest) {
 
   // Forward the request to the actual PHP API endpoint
   try {
-    const response = await fetch(endpoint, {
+    let requestHeaders = { ...headers };
+
+    if (!["GET", "HEAD"].includes(method)) {
+      if (useFileUpload && body instanceof FormData) {
+        // For file uploads, use FormData
+        delete requestHeaders["Content-Type"]; // Remove Content-Type header for multipart/form-data
+      }
+    }
+
+    let requestInit: RequestInit = {
       method,
-      headers,
-      body: ["GET", "HEAD"].includes(method) ? undefined : body,
-    })
+      headers: requestHeaders,
+    };
+
+    if (!["GET", "HEAD"].includes(method)) {
+      if (useFileUpload && body instanceof FormData) {
+        requestInit.body = body;
+      } else {
+        requestInit.body = body;
+      }
+    }
+
+    const response = await fetch(endpoint, requestInit)
     const contentType = response.headers.get("content-type") || ""
     let data
     if (contentType.includes("application/json")) {

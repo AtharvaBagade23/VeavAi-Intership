@@ -8,6 +8,7 @@ import { ResponsePanel } from "./response-panel"
 import { CodeSamples } from "./code-samples"
 import { TemplateModal } from "./template-modal"
 import type { ApiEndpoint } from "@/hooks/use-api-endpoints"
+import type { RequestData } from "@/types/request"
 import { v4 as uuidv4 } from 'uuid';
 
 interface ApiTesterProps {
@@ -28,7 +29,7 @@ export function ApiTester({ selectedEndpoint, uploadedTemplate }: ApiTesterProps
   const [isLoading, setIsLoading] = useState(false)
   const [showTemplateModal, setShowTemplateModal] = useState(false)
   const [template, setTemplate] = useState<any>(null)
-  const [requestData, setRequestData] = useState({
+  const [requestData, setRequestData] = useState<RequestData>({
     endpoint: "",
     method: "POST",
     headers: '{\n  "Content-Type": "application/json"\n}',
@@ -36,6 +37,12 @@ export function ApiTester({ selectedEndpoint, uploadedTemplate }: ApiTesterProps
     authToken: "",
     useFileUpload: false,
     devMode: false,
+    file: null,
+    additionalFields: JSON.stringify({
+      customer_id: "",
+      category: "",
+      tone: "professional"
+    }, null, 2)
   })
   const [templateLoading, setTemplateLoading] = useState(false)
   const [templateError, setTemplateError] = useState<string | null>(null)
@@ -51,6 +58,12 @@ export function ApiTester({ selectedEndpoint, uploadedTemplate }: ApiTesterProps
       body: "{}",
       authToken: "",
       useFileUpload: false,
+      file: null,
+      additionalFields: JSON.stringify({
+        customer_id: "",
+        category: "",
+        tone: "professional"
+      }, null, 2),
       devMode: false,
     });
     setResponse(null);
@@ -162,6 +175,21 @@ export function ApiTester({ selectedEndpoint, uploadedTemplate }: ApiTesterProps
         setIsLoading(false);
         return;
       }
+      // Prepare request body based on whether file upload is enabled
+      let requestBody;
+      if (requestData.useFileUpload && requestData.file) {
+        const formData = new FormData();
+        formData.append("file", requestData.file);
+        formData.append("metadata", JSON.stringify({
+          customer_id: "your-id",
+          category: "your-category",
+          tone: "professional"
+        }));
+        requestBody = formData;
+      } else {
+        requestBody = requestData.body;
+      }
+
       const res = await fetch("/api/proxy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -169,8 +197,9 @@ export function ApiTester({ selectedEndpoint, uploadedTemplate }: ApiTesterProps
           endpoint: apiUrl,
           method: requestData.method,
           headers: parsedHeaders,
-          body: requestData.body,
+          body: requestBody,
           devMode: requestData.devMode,
+          useFileUpload: requestData.useFileUpload
         }),
       })
       const data = await res.json()

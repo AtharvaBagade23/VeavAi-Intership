@@ -1,6 +1,6 @@
 "use client"
 
-import { Send, Sparkles } from "lucide-react"
+import { Send, Sparkles, Upload, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -25,8 +25,8 @@ interface RequestFormProps {
 }
 
 export function RequestForm({ selectedAPI, requestData, setRequestData, onSendRequest, isLoading, onShowTemplateModal }: RequestFormProps) {
-  const updateRequestData = (field: keyof RequestData, value: string | boolean) => {
-    setRequestData({ ...requestData, [field]: value })
+  const updateRequestData = (field: keyof RequestData, value: string | boolean | File | null) => {
+    setRequestData(prev => ({ ...prev, [field]: value }))
   }
 
   // Sync endpoint field only when selectedAPI.endpoint changes
@@ -122,9 +122,14 @@ export function RequestForm({ selectedAPI, requestData, setRequestData, onSendRe
             <Checkbox
               id="fileUpload"
               checked={requestData.useFileUpload}
-              onCheckedChange={(checked) => updateRequestData("useFileUpload", checked)}
+              onCheckedChange={(checked) => {
+                updateRequestData("useFileUpload", checked);
+                if (!checked) {
+                  updateRequestData("file", null);
+                }
+              }}
             />
-            <Label htmlFor="fileUpload">Use File Upload</Label>
+            <Label htmlFor="fileUpload">Use File Upload (multipart/form-data)</Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -135,6 +140,69 @@ export function RequestForm({ selectedAPI, requestData, setRequestData, onSendRe
             <Label htmlFor="devMode">Enable Development Mode</Label>
           </div>
         </div>
+
+        {/* File Upload Section */}
+        {requestData.useFileUpload && (
+          <div className="space-y-4 animate-in slide-in-from-top duration-300">
+            <div>
+              <Label htmlFor="file">File Upload</Label>
+              <div className="mt-2">
+                <div className="flex items-center gap-4">
+                  <div className="relative flex-1">
+                    <Input
+                      id="file"
+                      type="file"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+                        updateRequestData("file", file);
+                      }}
+                      className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
+                    />
+                    <div className="border border-input rounded-md px-3 py-2 bg-background flex items-center gap-2 text-sm text-muted-foreground hover:bg-accent/50 transition-colors">
+                      <Upload className="h-4 w-4" />
+                      <span>{requestData.file ? requestData.file.name : "Choose a file..."}</span>
+                    </div>
+                  </div>
+                  {requestData.file && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateRequestData("file", null)}
+                      className="px-2"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                {requestData.file && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Size: {(requestData.file.size / 1024).toFixed(2)} KB
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="additionalFields">Additional Fields (JSON format)</Label>
+              <Textarea
+                id="additionalFields"
+                value={requestData.additionalFields || JSON.stringify({
+                  customer_id: "",
+                  category: "",
+                  tone: "professional"
+                }, null, 2)}
+                onChange={(e) => updateRequestData("additionalFields", e.target.value)}
+                className="font-mono h-32"
+                placeholder={JSON.stringify({
+                  customer_id: "your-id",
+                  category: "your-category",
+                  tone: "professional"
+                }, null, 2)}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Auth Token */}
         <div>

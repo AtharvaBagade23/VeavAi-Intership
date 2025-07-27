@@ -6,4 +6,6 @@ export interface RequestData {
   useFileUpload: boolean
   devMode: boolean
   authToken: string
+  file: File | null
+  additionalFields: string
 }
